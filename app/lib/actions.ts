@@ -119,16 +119,32 @@ export async function deleteInvoice(id: string) {
   revalidatePath('/dashboard/invoices');
 }
 
+// export async function authenticate(
+//   prevState: string | undefined,
+//   formData: FormData
+// ) {
+//   await signIn('credentials', {
+//     email: formData.get('email'),
+//     password: formData.get('password'),
+//     redirectTo: '/dashboard',
+//   });
+
+//   return undefined;
+// }
 export async function authenticate(
   prevState: string | undefined,
   formData: FormData
 ) {
-  const email = formData.get('email')?.toString() || '';
-  const password = formData.get('password')?.toString() || '';
-
-  if (email === 'test@example.com' && password === '123456') {
-    return undefined; // no error
+  try {
+    await signIn('credentials', {
+      email: formData.get('email'),
+      password: formData.get('password'),
+      redirectTo: '/dashboard',
+    });
+  } catch (error) {
+    if (error instanceof AuthError) {
+      return 'Invalid credentials';
+    }
+    throw error; // let redirect happen
   }
-
-  return 'Invalid email or password'; // error message
 }
